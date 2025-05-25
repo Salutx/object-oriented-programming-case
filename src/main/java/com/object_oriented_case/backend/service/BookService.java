@@ -3,8 +3,9 @@ package com.object_oriented_case.backend.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import com.object_oriented_case.backend.model.BookModel;
+import com.object_oriented_case.backend.model.Book;
 import com.object_oriented_case.backend.repository.BookRepository;
 
 @Service
@@ -15,24 +16,36 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<BookModel> getAllBooks() {
+    public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
-    public BookModel getBookById(Long id) {
+    public Book getBookById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
 
-    public BookModel createBook(BookModel book) {
+    public Book createBook(Book book) {
         return bookRepository.save(book);
     }
 
-    // public BookModel updateBook(Long id, BookModel book) {
-
-    // }
-
-    public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
+    public Book updateBook(Long id, Book bookDetails) {
+        return bookRepository.findById(id)
+                .map(book -> {
+                    book.setName(bookDetails.getName());
+                    book.setPublisher(bookDetails.getPublisher());
+                    book.setPublishedIn(bookDetails.getPublishedIn());
+                    book.setCategories(bookDetails.getCategories());
+                    return bookRepository.save(book);
+                })
+                .orElse(null);
     }
 
+    public boolean deleteBook(@PathVariable Long id) {
+        if (bookRepository.existsById(id)) {
+            bookRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
