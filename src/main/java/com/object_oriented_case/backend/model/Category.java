@@ -3,7 +3,6 @@ package com.object_oriented_case.backend.model;
 import java.sql.Timestamp;
 import java.util.Set;
 
-import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,9 +21,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
     private String name;
-    
-    @CreationTimestamp
-    @Column(updatable = false)
+
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
 
     @ManyToOne
@@ -33,6 +31,5 @@ public class Category {
 
     @ManyToMany(mappedBy = "categories")
     private Set<Book> books;
-
 
 }

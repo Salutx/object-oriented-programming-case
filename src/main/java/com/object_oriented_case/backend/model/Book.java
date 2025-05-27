@@ -3,7 +3,6 @@ package com.object_oriented_case.backend.model;
 import java.sql.Timestamp;
 import java.util.Set;
 
-import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,8 +29,7 @@ public class Book {
     @JoinColumn(name = "createdBy", referencedColumnName = "userId")
     private User createdBy;
 
-    @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
 
     @ManyToMany
