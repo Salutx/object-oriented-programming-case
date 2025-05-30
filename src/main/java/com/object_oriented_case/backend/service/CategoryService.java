@@ -4,15 +4,20 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.object_oriented_case.backend.dto.CategoryCreateRequest;
 import com.object_oriented_case.backend.model.Category;
+import com.object_oriented_case.backend.model.User;
 import com.object_oriented_case.backend.repository.CategoryRepository;
 
 @Service
 public class CategoryService {
+
+    private final UserService userService;
     private final CategoryRepository categoryRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, UserService userService) {
         this.categoryRepository = categoryRepository;
+        this.userService = userService;
     }
 
     public List<Category> getAllCategories() {
@@ -23,15 +28,22 @@ public class CategoryService {
         return categoryRepository.findById(id).orElse(null);
     }
 
-    public Category createCategory(Category category) {
-        return categoryRepository.save(category);
+    public Category createCategory(CategoryCreateRequest category) {
+        Category newCategory = new Category();
+        User createdBy = userService.getUserById(category.getCreatedById());
+
+        System.out.println("createdBy" + createdBy);
+
+        newCategory.setName(category.getName());
+        newCategory.setCreatedBy(createdBy);
+
+        return categoryRepository.save(newCategory);
     }
 
     public Category updateCategory(Long id, Category categoryDetails) {
         return categoryRepository.findById(id)
                 .map(category -> {
                     category.setName(categoryDetails.getName());
-                    category.setBooks(categoryDetails.getBooks());
                     return categoryRepository.save(category);
                 })
                 .orElse(null);

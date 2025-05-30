@@ -1,16 +1,20 @@
 package com.object_oriented_case.backend.controller;
 
-import java.net.URI;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.object_oriented_case.backend.dto.UserLoginRequest;
+import com.object_oriented_case.backend.dto.UserResponse;
+import com.object_oriented_case.backend.dto.UserRegisterRequest;
 import com.object_oriented_case.backend.model.User;
 import com.object_oriented_case.backend.service.UserService;
 
@@ -30,21 +34,25 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
+
         if (user != null) {
-            return ResponseEntity.ok(user);
+            UserResponse response = new UserResponse();
+            response.setUserId(user.getUserId());
+            response.setName(user.getName());
+            response.setUsername(user.getUsername());
+            response.setEmail(user.getEmail());
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PostMapping
-    public ResponseEntity<User> createUser(User user) {
-        User createdUser = userService.createUser(user);
-        return ResponseEntity
-                .created(URI.create("/api/users/" + createdUser.getUserId()))
-                .body(createdUser);
+    @PostMapping("/register")
+    public ResponseEntity<User> createUser(@RequestBody UserRegisterRequest request) {
+        User createdUser = userService.createUser(request);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -56,4 +64,21 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // Login
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> loginUser(@RequestBody UserLoginRequest request) {
+        User user = userService.login(request);
+        if (user != null) {
+            UserResponse response = new UserResponse();
+            response.setUserId(user.getUserId());
+            response.setName(user.getName());
+            response.setUsername(user.getUsername());
+            response.setEmail(user.getEmail());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
 }

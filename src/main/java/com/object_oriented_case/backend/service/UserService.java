@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.object_oriented_case.backend.dto.UserLoginRequest;
+import com.object_oriented_case.backend.dto.UserRegisterRequest;
 import com.object_oriented_case.backend.model.User;
 import com.object_oriented_case.backend.repository.UserRepository;
 
@@ -23,7 +25,17 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User createUser(User user) {
+    public User createUser(UserRegisterRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+
         return userRepository.save(user);
     }
 
@@ -44,6 +56,15 @@ public class UserService {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public User login(UserLoginRequest request) {
+        User user = userRepository.findByUsername(request.getUsername());
+        if (user != null && user.getPassword().equals(request.getPassword())) {
+            return user;
+        } else {
+            throw new IllegalArgumentException("Invalid username or password");
         }
     }
 }

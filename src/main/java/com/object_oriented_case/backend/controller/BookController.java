@@ -1,14 +1,15 @@
 package com.object_oriented_case.backend.controller;
 
-import java.net.URI;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.object_oriented_case.backend.dto.BookCreateRequest;
 import com.object_oriented_case.backend.model.Book;
 import com.object_oriented_case.backend.service.BookService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,11 +44,9 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> createBook(@RequestBody Book book) {
-        Book createdBook = bookService.createBook(book);
-        return ResponseEntity
-                .created(URI.create("/api/books/" + createdBook.getBookId()))
-                .body(createdBook);
+    public ResponseEntity<Book> createBook(@RequestBody BookCreateRequest request) {
+        Book createdBook = bookService.createBook(request);
+        return new ResponseEntity<>(createdBook, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
