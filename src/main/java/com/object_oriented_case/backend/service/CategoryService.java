@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.object_oriented_case.backend.dto.CategoryCreateRequest;
+import com.object_oriented_case.backend.dto.CategoryUpdateRequest;
 import com.object_oriented_case.backend.model.Category;
 import com.object_oriented_case.backend.model.User;
 import com.object_oriented_case.backend.repository.CategoryRepository;
@@ -40,7 +41,7 @@ public class CategoryService {
         return categoryRepository.save(newCategory);
     }
 
-    public Category updateCategory(Long id, Category categoryDetails) {
+    public Category updateCategory(Long id, CategoryUpdateRequest categoryDetails) {
         return categoryRepository.findById(id)
                 .map(category -> {
                     category.setName(categoryDetails.getName());

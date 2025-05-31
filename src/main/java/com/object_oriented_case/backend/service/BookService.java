@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.object_oriented_case.backend.dto.BookCreateRequest;
+import com.object_oriented_case.backend.dto.BookUpdateRequest;
 import com.object_oriented_case.backend.model.Book;
 import com.object_oriented_case.backend.model.Category;
 import com.object_oriented_case.backend.model.User;
@@ -54,13 +55,20 @@ public class BookService {
         return bookRepository.save(newBook);
     }
 
-    public Book updateBook(Long id, Book bookDetails) {
+    public Book updateBook(Long id, BookUpdateRequest bookDetails) {
         return bookRepository.findById(id)
                 .map(book -> {
                     book.setName(bookDetails.getName());
                     book.setPublisher(bookDetails.getPublisher());
                     book.setPublishedIn(bookDetails.getPublishedIn());
-                    book.setCategories(bookDetails.getCategories());
+
+                    Set<Category> categories = bookDetails.getCategoryIds().stream()
+                            .map(categoryService::getCategoryById)
+                            .collect(Collectors.toSet());
+
+                    book.setCategories(categories);
+                    book.setAuthor(bookDetails.getAuthor());
+
                     return bookRepository.save(book);
                 })
                 .orElse(null);
